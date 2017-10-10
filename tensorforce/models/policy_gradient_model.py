@@ -61,8 +61,11 @@ class PolicyGradientModel(Model):
         self.distribution = dict()
         for name, action in config.actions:
             if 'distribution' in action:
-                kwargs = dict(action)
-                self.distribution[name] = Distribution.from_config(config=action.distribution, kwargs=kwargs)
+                if isinstance(action.distribution, Distribution):
+                    self.distribution[name] = action.distribution
+                else:
+                    kwargs = dict(action)
+                    self.distribution[name] = Distribution.from_config(config=action.distribution, kwargs=kwargs)
             elif action.continuous:
                 if action.min_value is None:
                     assert action.max_value is None
