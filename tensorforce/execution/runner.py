@@ -35,7 +35,7 @@ class Runner(object):
     # These agents can be used in an A3C fashion
     async_supported = ('VPGAgent', 'PPOAgent')  # And potentially TRPOAgent, needs to be checked...
 
-    def __init__(self, agent, environment, repeat_actions=1, cluster_spec=None, task_index=None, save_path=None, save_episodes=None):
+    def __init__(self, agent, environment, repeat_actions=1, cluster_spec=None, task_index=None, save_path=None, save_episodes=None, deterministic=False):
         """
         Initialize a Runner object.
 
@@ -57,6 +57,7 @@ class Runner(object):
         self.task_index = task_index
         self.save_path = save_path
         self.save_episodes = save_episodes
+        self.deterministic = deterministic
 
     def run(self, episodes=-1, max_timesteps=-1, episode_finished=None):
         """
@@ -134,7 +135,7 @@ class Runner(object):
             self.timestep = 0
             episode_start_time = time.time()
             while True:
-                action = self.agent.act(state=state)
+                action = self.agent.act(state=state, deterministic=self.deterministic)
                 if self.repeat_actions > 1:
                     reward = 0
                     for repeat in xrange(self.repeat_actions):
